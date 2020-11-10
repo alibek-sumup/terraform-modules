@@ -27,6 +27,11 @@ module "vpc" {
   aws_region       = var.aws_region
   cidr_block       = var.cidr_block
   num_nat_gateways = var.num_nat_gateways
+
+  custom_tags                            = module.vpc_tags.vpc_eks_tags
+  public_subnet_custom_tags              = module.vpc_tags.vpc_public_subnet_eks_tags
+  private_app_subnet_custom_tags         = module.vpc_tags.vpc_private_app_subnet_eks_tags
+  private_persistence_subnet_custom_tags = module.vpc_tags.vpc_private_persistence_subnet_eks_tags
 }
 
 data "terraform_remote_state" "mgmt_vpc" {
