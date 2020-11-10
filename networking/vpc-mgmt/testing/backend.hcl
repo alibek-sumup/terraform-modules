@@ -1,3 +1,3 @@
 bucket = "s3bucket-akula"
-key    = "manual-testing/alibek/terraform.tfstate"
+key    = "vpc-mgmt/manual-testing/akula/terraform.tfstate"
 region = "eu-central-1"

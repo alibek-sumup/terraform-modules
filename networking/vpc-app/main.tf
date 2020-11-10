@@ -29,6 +29,17 @@ module "vpc" {
   num_nat_gateways = var.num_nat_gateways
 }
 
+data "terraform_remote_state" "mgmt_vpc" {
+  backend = "s3"
+
+
+  config = {
+    region = var.aws_region
+    bucket = var.terraform_state_s3_bucket
+    key    = "vpc-mgmt/manual-testing/akula/terraform.tfstate"
+  }
+}
+
 module "vpc_network_acls" {
   source = "git@github.com:gruntwork-io/module-vpc.git//modules/vpc-app-network-acls?ref=v0.10.2"
 
@@ -44,17 +55,11 @@ module "vpc_network_acls" {
   public_subnet_cidr_blocks              = module.vpc.public_subnet_cidr_blocks
   private_app_subnet_cidr_blocks         = module.vpc.private_app_subnet_cidr_blocks
   private_persistence_subnet_cidr_blocks = module.vpc.private_persistence_subnet_cidr_blocks
+  allow_access_from_mgmt_vpc = true
+  mgmt_vpc_cidr_block        = data.terraform_remote_state.mgmt_vpc.outputs.vpc_cidr_block
 }
 
-data "terraform_remote_state" "mgmt_vpc" {
-  backend = "s3"
 
-  config {
-    region = var.terraform_state_aws_region
-    bucket = var.terraform_state_s3_bucket
-    key    = "${var.aws_region}/prod/networking/vpc-mgmt/terraform.tfstate"
-  }
-}
 
 module "mgmt_vpc_peering_connection" {
   source = "git@github.com:gruntwork-io/module-vpc.git//modules/vpc-peering?ref=v0.10.2"
@@ -90,11 +95,24 @@ module "mgmt_vpc_peering_connection" {
   num_destination_vpc_route_tables = (module.vpc.num_availability_zones * 2) + 1
 }
 
-module "vpc_network_acls" {
-  source = "git@github.com:gruntwork-io/module-vpc.git//modules/vpc-app-network-acls?ref=v0.10.2"
 
-  # ... (other params omitted) ...
 
-  allow_access_from_mgmt_vpc = true
-  mgmt_vpc_cidr_block        = data.terraform_remote_state.mgmt_vpc.vpc_cidr_block
+module "vpc_tags" {
+   source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-vpc-tags?ref=v0.27.2"
+
+  eks_cluster_names = var.eks_cluster_names
+}
+
+module "dns_mgmt_to_app" {
+  source = "git@github.com:gruntwork-io/module-vpc.git//modules/vpc-dns-forwarder?ref=v0.10.2"
+
+  origin_vpc_id                                   = data.terraform_remote_state.mgmt_vpc.outputs.vpc_id
+  origin_vpc_name                                 = data.terraform_remote_state.mgmt_vpc.outputs.vpc_name
+  origin_vpc_route53_resolver_primary_subnet_id   = element(data.terraform_remote_state.mgmt_vpc.outputs.public_subnet_ids, 0)
+  origin_vpc_route53_resolver_secondary_subnet_id = element(data.terraform_remote_state.mgmt_vpc.outputs.public_subnet_ids, 1)
+
+  destination_vpc_id                                   = module.vpc.vpc_id
+  destination_vpc_name                                 = module.vpc.vpc_name
+  destination_vpc_route53_resolver_primary_subnet_id   = element(module.vpc.public_subnet_ids, 0)
+  destination_vpc_route53_resolver_secondary_subnet_id = element(module.vpc.public_subnet_ids, 1)
 }

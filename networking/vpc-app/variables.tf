@@ -23,3 +23,12 @@ variable "num_nat_gateways" {
   description = "The number of NAT Gateways to launch for this VPC. For production VPCs, a NAT Gateway should be placed in each Availability Zone (so likely 3 total), whereas for non-prod VPCs, just one Availability Zone (and hence 1 NAT Gateway) will suffice."
   type        = number
 }
+
+variable "eks_cluster_names" {
+  description = "Eks cluster names"
+  type = list(string)
+}
+
+variable "terraform_state_s3_bucket" {
+  type = string
+}
