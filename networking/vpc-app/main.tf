@@ -41,7 +41,7 @@ data "terraform_remote_state" "mgmt_vpc" {
   config = {
     region = var.aws_region
     bucket = var.terraform_state_s3_bucket
-    key    = "vpc-mgmt/manual-testing/akula/terraform.tfstate"
+    key    = "${region}/prod/networking/vpc-mgmt/terraform.tfstate"
   }
 }
 
