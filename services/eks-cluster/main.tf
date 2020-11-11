@@ -69,7 +69,7 @@ data "template_file" "user_data" {
 
 module "cloudwatch_log_aggregation" {
   # Make sure to replace <VERSION> in this URL with the latest module-aws-monitoring release
-  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/logs/cloudwatch-log-aggregation-iam-policy?ref=v0.23.3"
+  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/logs/cloudwatch-log-aggregation-iam-policy?ref=v0.22.2"
 
   name_prefix = var.cluster_name
 }
@@ -82,7 +82,7 @@ resource "aws_iam_policy_attachment" "attach_cloudwatch_log_aggregation_policy" 
 
 module "cloudwatch_metrics" {
   # Make sure to replace <VERSION> in this URL with the latest module-aws-monitoring release
-  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/metrics/cloudwatch-custom-metrics-iam-policy?ref=v0.23.3"
+  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/metrics/cloudwatch-custom-metrics-iam-policy?ref=v0.22.2"
 
   name_prefix = var.cluster_name
 }
