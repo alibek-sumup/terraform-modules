@@ -3,7 +3,7 @@ provider "aws" {
   region = var.aws_region
 
   # Require a 2.x version of the AWS provider
-  version = "~> 2.6"
+  version = ">= 2.49"
 
   # Only these AWS Account IDs may be operated on by this template
   allowed_account_ids = [var.aws_account_id]
@@ -16,12 +16,12 @@ terraform {
 
   # Only allow this Terraform version. Note that if you upgrade to a newer version, Terraform won't allow you to use an
   # older version, so when you upgrade, you should upgrade everyone on your team and your CI servers all at once.
-  required_version = "= 0.12.16"
+  required_version = "= 0.12.29"
 }
 
 module "eks_cluster" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-control-plane?ref=v0.25.0"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-control-plane?ref=v0.27.2"
 
   cluster_name = var.cluster_name
 
@@ -29,13 +29,13 @@ module "eks_cluster" {
   vpc_master_subnet_ids = data.terraform_remote_state.vpc.outputs.private_app_subnet_ids
 
   enabled_cluster_log_types = ["api", "audit", "authenticator"]
-  kubernetes_version        = 1.18
+  kubernetes_version        = 1.10
   endpoint_public_access    = false
 }
 
 module "eks_workers" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-workers?ref=v0.25.0"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-workers?ref=v0.27.2"
 
   name_prefix  = "app-workers-"
   cluster_name = var.cluster_name
@@ -69,7 +69,7 @@ data "template_file" "user_data" {
 
 module "cloudwatch_log_aggregation" {
   # Make sure to replace <VERSION> in this URL with the latest module-aws-monitoring release
-  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/logs/cloudwatch-log-aggregation-iam-policy?ref=v0.22.2"
+  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/logs/cloudwatch-log-aggregation-iam-policy?ref=v0.23.3"
 
   name_prefix = var.cluster_name
 }
@@ -82,7 +82,7 @@ resource "aws_iam_policy_attachment" "attach_cloudwatch_log_aggregation_policy" 
 
 module "cloudwatch_metrics" {
   # Make sure to replace <VERSION> in this URL with the latest module-aws-monitoring release
-  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/metrics/cloudwatch-custom-metrics-iam-policy?ref=v0.22.2"
+  source = "git@github.com:gruntwork-io/module-aws-monitoring.git//modules/metrics/cloudwatch-custom-metrics-iam-policy?ref=v0.23.3"
 
   name_prefix = var.cluster_name
 }
@@ -95,7 +95,7 @@ resource "aws_iam_policy_attachment" "attach_cloudwatch_metrics_policy" {
 
 module "eks_k8s_role_mapping" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-k8s-role-mapping?ref=v0.25.0"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-k8s-role-mapping?ref=v0.27.2"
 
   # This will configure the worker nodes' IAM role to have access to the system:node Kubernetes role
   eks_worker_iam_role_arns = [module.eks_workers.eks_worker_iam_role_arn]
@@ -109,7 +109,7 @@ module "eks_k8s_role_mapping" {
 }
 
 provider "kubernetes" {
-  version = "1.18"
+  version = "1.10"
 
   load_config_file       = false
   host                   = data.template_file.kubernetes_cluster_endpoint.rendered

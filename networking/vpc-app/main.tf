@@ -103,7 +103,7 @@ module "mgmt_vpc_peering_connection" {
 
 
 module "vpc_tags" {
-   source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-vpc-tags?ref=v0.25.0"
+   source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-vpc-tags?ref=v0.27.2"
 
   eks_cluster_names = var.eks_cluster_names
 }

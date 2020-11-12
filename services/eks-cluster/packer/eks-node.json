@@ -2,7 +2,7 @@
   "variables": {
     "aws_region": "eu-central-1",
     "github_auth_token": "{{env `GITHUB_OAUTH_TOKEN`}}",
-    "kubernetes_version": "1.18"
+    "kubernetes_version": "1.10"
   },
   "builders": [{
     "ami_name": "eks-cluster-instance-{{isotime | clean_resource_name}}",
@@ -38,7 +38,7 @@
     "type": "shell",
     "inline": [
       "gruntwork-install --module-name 'bash-commons' --repo 'https://github.com/gruntwork-io/bash-commons' --tag 'v0.1.2'",
-      "gruntwork-install --module-name 'eks-scripts' --repo 'https://github.com/gruntwork-io/terraform-aws-eks' --tag 'v0.25.0'",
+      "gruntwork-install --module-name 'eks-scripts' --repo 'https://github.com/gruntwork-io/terraform-aws-eks' --tag 'v0.27.2'",
       "gruntwork-install --module-name 'metrics/cloudwatch-memory-disk-metrics-scripts' --repo https://github.com/gruntwork-io/module-aws-monitoring --tag 'v0.13.2'",
       "gruntwork-install --module-name 'logs/syslog' --repo https://github.com/gruntwork-io/module-aws-monitoring --tag 'v0.13.2'",
       "gruntwork-install --module-name 'auto-update' --repo https://github.com/gruntwork-io/module-security --tag 'v0.18.1'",
