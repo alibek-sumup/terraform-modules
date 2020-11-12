@@ -21,7 +21,7 @@ terraform {
 
 module "eks_cluster" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-control-plane?ref=v0.27.2"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-control-plane?ref=v0.25.0"
 
   cluster_name = var.cluster_name
 
@@ -35,7 +35,7 @@ module "eks_cluster" {
 
 module "eks_workers" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-workers?ref=v0.27.2"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-cluster-workers?ref=v0.25.0"
 
   name_prefix  = "app-workers-"
   cluster_name = var.cluster_name
@@ -95,7 +95,7 @@ resource "aws_iam_policy_attachment" "attach_cloudwatch_metrics_policy" {
 
 module "eks_k8s_role_mapping" {
   # Make sure to replace <VERSION> in this URL with the latest terraform-aws-eks release
-  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-k8s-role-mapping?ref=v0.27.2"
+  source = "git@github.com:gruntwork-io/terraform-aws-eks.git//modules/eks-k8s-role-mapping?ref=v0.25.0"
 
   # This will configure the worker nodes' IAM role to have access to the system:node Kubernetes role
   eks_worker_iam_role_arns = [module.eks_workers.eks_worker_iam_role_arn]
